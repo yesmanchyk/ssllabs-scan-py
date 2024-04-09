@@ -8,3 +8,13 @@ Python >= 3.10.12
 ```
 pip install -r requirements.txt
 ```
+
+## Test
+```
+python -m unittest  ssllabs.tests.scan
+```
+
+## Run
+```
+python ssllabs-scan.py
+```
