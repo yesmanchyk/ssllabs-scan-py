@@ -57,3 +57,14 @@ class TestScanner(IsolatedAsyncioTestCase):
         resp = await self.__scanner.analyze('jsmith@example.com', 'gmail.com')
 
         self.assertEqual('gmail.com', resp['host'])
+
+
+    async def test_scanner_saves_report(self):
+        self.__client.result = f'{__name__}.analyze.json'
+        path = os.path.dirname(__file__)
+        report = os.path.join(path, f'{__name__}.report.xlsx')
+        resp = await self.__scanner.analyze('jsmith@example.com', 'gmail.com')
+        
+        await self.__scanner.save_report(resp, report)
+
+        self.assertTrue(os.path.exists(report))
