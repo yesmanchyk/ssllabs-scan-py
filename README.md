@@ -29,3 +29,10 @@ docker run -it --rm  \
     -e SSLLABS_HOST=www.example.com \
     -v $(pwd)/reports:/reports ssllabs-scan-py
 ```
+
+## Plans
+How would you scale this script and run it with resiliency to e.g. handle 1000s of domains?
+1. Support multiple URLs as an input and run analysis in parallel using `asyncio.gather()`. Futher scale with Kubernetes Job/CronJob's.
+2. Added monitoring and alerts using AWS CloudWatch or Prometheus.
+3. Create and expose REST API and configuration database/storage support to have CRUD operations on scanned domain list.
+4. Add more tests for agile evolution of this service.
