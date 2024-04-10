@@ -62,9 +62,10 @@ class TestScanner(IsolatedAsyncioTestCase):
     async def test_scanner_saves_report(self):
         self.__client.result = f'{__name__}.analyze.json'
         path = os.path.dirname(__file__)
-        report = os.path.join(path, f'{__name__}.report.xlsx')
-        resp = await self.__scanner.analyze('jsmith@example.com', 'gmail.com')
-        
-        await self.__scanner.save_report(resp, report)
+        for ext in ['csv', 'xlsx']:
+            report = os.path.join(path, f'{__name__}.report.{ext}')
+            resp = await self.__scanner.analyze('jsmith@example.com', 'gmail.com')
+            
+            await self.__scanner.save_report(resp, report)
 
-        self.assertTrue(os.path.exists(report))
+            self.assertTrue(os.path.exists(report))
