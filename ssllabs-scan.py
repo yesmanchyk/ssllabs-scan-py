@@ -4,6 +4,11 @@ import sys
 import json
 import argparse
 
+async def scan(email, host):
+    s = Scanner(Client(), 'https://api.ssllabs.com/api/v4')
+    a = await s.analyze(email, host)
+    await s.save_report(a, f'{host}.csv')
+
 async def main():
 
     parser = argparse.ArgumentParser(description='Scan SSL hosts')
@@ -17,8 +22,8 @@ async def main():
 
     args = parser.parse_args()
     s = Scanner(Client(), 'https://api.ssllabs.com/api/v4')
-    a = await s.analyze(args.email, args.hosts[0])
-    await s.save_report(a, args.report)
+    tasks = [asyncio.create_task(scan(args.email, host)) for host in args.hosts]
+    await asyncio.gather(*tasks)
 
 if __name__ == "__main__":
     asyncio.run(main())
