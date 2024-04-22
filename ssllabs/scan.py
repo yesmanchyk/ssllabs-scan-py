@@ -1,3 +1,4 @@
+import asyncio
 import aiohttp
 import json
 import pandas as pd
@@ -26,11 +27,18 @@ class Scanner:
         r = json.loads(resp)
         return r['status'] == 'success'
 
-    async def analyze(self, email, host, all=False) -> dict:
+    async def analyze(self, email, host, all=False, retry=1, retries=10) -> dict:
         params = '&all=done' if all else ''
         url = f'{self.__api}/analyze?host={host}{params}'
-        resp = await self.__client.get(url, headers={'email': email})
-        return json.loads(resp)
+        j = {}
+        for i in range(retries):
+            resp = await self.__client.get(url, headers={'email': email})
+            j = json.loads(resp)
+            # print(j['status'])
+            if j['status'] != 'IN_PROGRESS':
+                break
+            await asyncio.sleep(retry)
+        return j
 
     async def save_report(self, analysis: dict, path: str):
         a = analysis
