@@ -1,13 +1,12 @@
 from ssllabs.scan import Scanner, Client
 import asyncio
-import sys
-import json
 import argparse
 
-async def scan(email, host):
+async def scan(email, host, reports):
     s = Scanner(Client(), 'https://api.ssllabs.com/api/v4')
     a = await s.analyze(email, host)
-    await s.save_report(a, f'{host}.csv')
+    p = reports.replace('{host}', host)
+    await s.save_report(a, p)
 
 async def main():
 
@@ -22,7 +21,9 @@ async def main():
 
     args = parser.parse_args()
     s = Scanner(Client(), 'https://api.ssllabs.com/api/v4')
-    tasks = [asyncio.create_task(scan(args.email, host)) for host in args.hosts]
+    tasks = [asyncio.create_task(
+            scan(args.email, host, args.report)
+            ) for host in args.hosts]
     await asyncio.gather(*tasks)
 
 if __name__ == "__main__":

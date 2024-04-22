@@ -26,8 +26,9 @@ class Scanner:
         r = json.loads(resp)
         return r['status'] == 'success'
 
-    async def analyze(self, email, host) -> dict:
-        url = f'{self.__api}/analyze?host={host}'
+    async def analyze(self, email, host, all=False) -> dict:
+        params = '&all=done' if all else ''
+        url = f'{self.__api}/analyze?host={host}{params}'
         resp = await self.__client.get(url, headers={'email': email})
         return json.loads(resp)
 
