@@ -50,30 +50,17 @@ class Scanner:
     async def save_report(self, analysis: dict, path: str):
         a = analysis
         host = a['host']
-        headers = [f for f in a if f != 'endpoints']
-        values = [[f, a[f]] for f in a if f != 'endpoints']
-        if 'endpoints' in a:
-            eps = a['endpoints']
-            for i, ep in enumerate(eps):
-                headers.append('')
-                headers.append(f'endpoint {i+1}')
-                values.append(['', ''])
-                values.append([f'endpoint {i+1}', ''])
-                for f in ep:
-                    headers.append(f)
-                    values.append([f, ep[f]])
+        values = [[host, a['startTime'], a['testTime'], 
+                   ep['serverName'], ep['ipAddress'], ep['grade']] 
+                   for ep in a['endpoints']]
         df = pd.DataFrame(values,                             
-                            index=headers, 
-                            columns=['field', 'value'])
+                            columns=['host', 'startTime', 'testTime', 
+                                     'serverName', 'ipAddress', 'grade'])
         if path.endswith('.csv'):
-            df = df.reset_index()
-            del df['index']
             df.to_csv(path)
         elif path.endswith('.html'):
-            del df['field']
             df.to_html(path)
         else:
-            del df['field']
             dfs = {host: df}
             writer = pd.ExcelWriter(path, engine='xlsxwriter')
             for sheetname, df in dfs.items():  # loop through `dict` of dataframes
