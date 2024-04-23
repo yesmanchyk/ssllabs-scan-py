@@ -69,6 +69,9 @@ class Scanner:
             df = df.reset_index()
             del df['index']
             df.to_csv(path)
+        elif path.endswith('.html'):
+            del df['field']
+            df.to_html(path)
         else:
             del df['field']
             dfs = {host: df}
