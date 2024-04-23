@@ -51,11 +51,11 @@ class Scanner:
         a = analysis
         host = a['host']
         values = [[host, a['startTime'], a['testTime'], 
-                   ep['serverName'], ep['ipAddress'], ep['grade']] 
+                   ep['ipAddress'], ep['grade']] 
                    for ep in a['endpoints']]
         df = pd.DataFrame(values,                             
                             columns=['host', 'startTime', 'testTime', 
-                                     'serverName', 'ipAddress', 'grade'])
+                                     'ipAddress', 'grade'])
         if path.endswith('.csv'):
             df.to_csv(path)
         elif path.endswith('.html'):
