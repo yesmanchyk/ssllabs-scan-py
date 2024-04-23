@@ -1,7 +1,10 @@
+import logging
 import asyncio
 import aiohttp
 import json
 import pandas as pd
+
+log = logging.getLogger(__name__)
 
 class Client:
     async def get(self, url: str, headers: object = {}):
@@ -27,15 +30,16 @@ class Scanner:
         r = json.loads(resp)
         return r['status'] == 'success'
 
-    async def analyze(self, email, host, all=False, retry=1, retries=10) -> dict:
+    async def analyze(self, email, host, all=False, retry=5, retries=60) -> dict:
         params = '&all=done' if all else ''
         url = f'{self.__api}/analyze?host={host}{params}'
         j = {}
         for i in range(retries):
+            log.info('Try %d/%d on %s', i+1, retries, url)
             resp = await self.__client.get(url, headers={'email': email})
+            log.info('From %s got %s', url, resp)
             j = json.loads(resp)
-            # print(j['status'])
-            if j['status'] != 'IN_PROGRESS':
+            if j['status'] in ['READY', 'ERROR']:
                 break
             await asyncio.sleep(retry)
         return j

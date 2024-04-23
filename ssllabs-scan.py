@@ -1,14 +1,21 @@
 from ssllabs.scan import Scanner, Client
 import asyncio
 import argparse
+import logging
+
+log = logging.getLogger(__name__)
 
 async def scan(email, host, reports):
     s = Scanner(Client(), 'https://api.ssllabs.com/api/v4')
+    log.info('Scanning %s', host)
     a = await s.analyze(email, host)
+    log.info('Host %s has report %s', host, a)
     p = reports.replace('{host}', host)
+    log.info('Saving report for %s to file %s', host, p)
     await s.save_report(a, p)
 
 async def main():
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 
     parser = argparse.ArgumentParser(description='Scan SSL hosts')
     parser.add_argument('hosts', metavar='H', type=str, 
