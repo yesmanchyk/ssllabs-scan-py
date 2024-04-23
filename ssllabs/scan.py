@@ -26,9 +26,12 @@ class Scanner:
 
     async def register(self, fname, lname, email, org) -> bool:
         url = f'{self.__api}/register'
-        resp = await self.__client.post(url, headers={'Content-Type': 'application/json'}, body={'firstName':fname, 'lastName': lname, 'email': email, 'organization': org})
+        data = {'firstName':fname, 'lastName': lname, 'email': email, 'organization': org}
+        log.info('To %s sending %s', url, data)
+        resp = await self.__client.post(url, headers={'Content-Type': 'application/json'}, body=data)
+        log.info('From %s got %s', url, resp)
         r = json.loads(resp)
-        return r['status'] == 'success'
+        return 'status' in r and r['status'] == 'success'
 
     async def analyze(self, email, host, all=False, retry=5, retries=60) -> dict:
         params = '&all=done' if all else ''
